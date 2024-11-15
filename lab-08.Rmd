@@ -45,14 +45,23 @@ weather %>%
 
 1. Are there any missing values in our variable of interest `RainTomorrow`? If so, we filter them out and save the new dataset as `weather_noNA`. 
 
+yes, we have missing values, such as in Sunshine and evaporation, which are of interest. 
+
 ```{r}
+weather_noNA <- na.omit(weather)
+  
 
 ```
 
 2. Which cities are the ones with more rain days? To do this, let's analyze the `RainToday` variable. 
 
 ```{r}
-
+weather_noNA %>% 
+filter(RainToday == "Yes") %>%
+group_by(Location) %>%
+count() %>%
+arrange(desc(n)) %>%
+print(n = 26)
 ```
 
 # Exercise 2: Logistic regression
@@ -60,15 +69,26 @@ weather %>%
 We will focus our analysis on the city of `Portland`.
 Remove `eval=FALSE` from below once you have defined the object `weather_noNA`.
 
-```{r eval=FALSE}
+```{r}
 # remove eval=FALSE
+
 weather_Portland <- weather_noNA %>%
-  filter(Location == "Portland")
+  filter(Location == "Portland") 
 ```
+
 
 1. Try to predict `RainTomorrow` by fitting a linear regression using the variable `RainToday` and print the output using `tidy()`.
 
 ```{r}
+
+weather_Portland$RainToday <- as.factor(weather_Portland$RainToday)
+weather_Portland$RainTomorrow <- as.factor(weather_Portland$RainTomorrow)
+
+Port_rain <- logistic_reg() %>%
+  set_engine("glm") %>%
+  fit(RainTomorrow ~ RainToday, data = weather_Portland, family = "binomial")
+
+tidy(Port_rain)
 
 ```
 
@@ -77,6 +97,11 @@ weather_Portland <- weather_noNA %>%
 - Plot them using an appropriate visualization. What is peculiar about them?
 
 ```{r}
+
+#ggplot(data = Port_rain, 
+#       mapping = aes(
+#         x = RainTomorrow)) +
+#  geom_histogram()
 
 ```
 
